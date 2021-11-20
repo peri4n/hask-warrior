@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 45799e4896b7537735f8a4bbddc8b8df0065a02dbb8ce856eeef345dd0989add
+-- hash: 0a65a2025594012784417c858084fd912c653ad4570ff5858e39651696f1723b
 
 name:           hask-warrior
 version:        0.1.0.0
@@ -34,6 +34,7 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , optparse-applicative
   default-language: Haskell2010
 
 executable hask-warrior-exe
@@ -46,6 +47,7 @@ executable hask-warrior-exe
   build-depends:
       base >=4.7 && <5
     , hask-warrior
+    , optparse-applicative
   default-language: Haskell2010
 
 test-suite hask-warrior-test
@@ -59,4 +61,5 @@ test-suite hask-warrior-test
   build-depends:
       base >=4.7 && <5
     , hask-warrior
+    , optparse-applicative
   default-language: Haskell2010
