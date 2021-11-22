@@ -15,7 +15,7 @@ data Command
   | Delete TaskId
 
 main :: IO ()
-main = app =<< execParser
+main = runStdoutLoggingT . runHask . app =<< execParser
     (parseCommand `withInfo` "Interactive Task Manager")
 
 parseCommand :: Parser Command
@@ -29,18 +29,18 @@ parseAdd = Add <$> argument auto (metavar "TASKID")
 parseDelete :: Parser Command
 parseDelete = Delete <$> argument auto (metavar "TASKID")
 
-app :: Command -> IO ()
-app (Add id) = runStdoutLoggingT (runHask $ addTask id)
-app (Delete id) = runStdoutLoggingT (runHask $ deleteTask id)
+app :: Command -> Hask ()
+app (Add id) = addTask id
+app (Delete id) = deleteTask id
 
 addTask :: TaskId -> Hask ()
 addTask id = do
-  logInfoN $ "Adding task with id " <> (tshow id)
+  logInfoN $ "Adding task with id " <> tshow id
   liftIO $ putStrLn "Write to DB"
 
 deleteTask :: TaskId -> Hask ()
 deleteTask id = do
-  logInfoN $ "Deleting task with id " <> (tshow id)
+  logInfoN $ "Deleting task with id " <> tshow id
   liftIO $ putStrLn "Remove from DB"
 
 withInfo :: Parser a -> String -> ParserInfo a
