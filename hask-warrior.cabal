@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0a65a2025594012784417c858084fd912c653ad4570ff5858e39651696f1723b
+-- hash: 598a609ffd5c3015f7b26539a286a8bcd2784fd28d29632a80d17af6940ae7d9
 
 name:           hask-warrior
 version:        0.1.0.0
@@ -32,9 +32,13 @@ library
       Paths_hask_warrior
   hs-source-dirs:
       src
+  default-extensions: NoImplicitPrelude OverloadedStrings
   build-depends:
       base >=4.7 && <5
+    , classy-prelude
+    , monad-logger
     , optparse-applicative
+    , text
   default-language: Haskell2010
 
 executable hask-warrior-exe
@@ -43,11 +47,15 @@ executable hask-warrior-exe
       Paths_hask_warrior
   hs-source-dirs:
       app
+  default-extensions: NoImplicitPrelude OverloadedStrings
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , classy-prelude
     , hask-warrior
+    , monad-logger
     , optparse-applicative
+    , text
   default-language: Haskell2010
 
 test-suite hask-warrior-test
@@ -57,9 +65,13 @@ test-suite hask-warrior-test
       Paths_hask_warrior
   hs-source-dirs:
       test
+  default-extensions: NoImplicitPrelude OverloadedStrings
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , classy-prelude
     , hask-warrior
+    , monad-logger
     , optparse-applicative
+    , text
   default-language: Haskell2010
