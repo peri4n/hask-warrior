@@ -12,7 +12,9 @@ type TaskId = Int
 
 data Command
   = Add TaskId
+  | Init
   | Delete TaskId
+  | List
 
 main :: IO ()
 main = runStdoutLoggingT . runHask . app =<< execParser
@@ -21,17 +23,27 @@ main = runStdoutLoggingT . runHask . app =<< execParser
 parseCommand :: Parser Command
 parseCommand = subparser $
   command "add" (parseAdd `withInfo` "Create a task") <>
-  command "delete" (parseDelete `withInfo` "Delete a task")
+  command "init" (parseAdd `withInfo` "Initialize task database") <>
+  command "delete" (parseDelete `withInfo` "Delete a task") <>
+  command "list" (parseDelete `withInfo` "List all tasks")
 
 parseAdd :: Parser Command
 parseAdd = Add <$> argument auto (metavar "TASKID")
+
+parseInit :: Parser Command
+parseInit = pure Init
+
+parseList :: Parser Command
+parseList = pure List
 
 parseDelete :: Parser Command
 parseDelete = Delete <$> argument auto (metavar "TASKID")
 
 app :: Command -> Hask ()
 app (Add id) = addTask id
+app Init = error "NotYetImplemented"
 app (Delete id) = deleteTask id
+app List = error "NotYetImplemented"
 
 addTask :: TaskId -> Hask ()
 addTask id = do
