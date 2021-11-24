@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 598a609ffd5c3015f7b26539a286a8bcd2784fd28d29632a80d17af6940ae7d9
+-- hash: 173ee1225469fc5336b28885a7a9ea266c88adaa924bf316b71ec56b3fa8e4fa
 
 name:           hask-warrior
 version:        0.1.0.0
@@ -38,6 +38,7 @@ library
     , classy-prelude
     , monad-logger
     , optparse-applicative
+    , sqlite-simple
     , text
   default-language: Haskell2010
 
@@ -55,6 +56,7 @@ executable hask-warrior-exe
     , hask-warrior
     , monad-logger
     , optparse-applicative
+    , sqlite-simple
     , text
   default-language: Haskell2010
 
@@ -73,5 +75,6 @@ test-suite hask-warrior-test
     , hask-warrior
     , monad-logger
     , optparse-applicative
+    , sqlite-simple
     , text
   default-language: Haskell2010

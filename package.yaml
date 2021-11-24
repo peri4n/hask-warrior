@@ -25,6 +25,7 @@ dependencies:
 - monad-logger
 - text
 - classy-prelude
+- sqlite-simple
 
 default-extensions:
 - NoImplicitPrelude

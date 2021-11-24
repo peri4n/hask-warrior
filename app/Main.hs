@@ -2,6 +2,7 @@
 
 module Main where
 
+import           Database.SQLite.Simple
 import ClassyPrelude
 import Control.Monad.IO.Class
 import Control.Monad.Logger
@@ -23,9 +24,9 @@ main = runStdoutLoggingT . runHask . app =<< execParser
 parseCommand :: Parser Command
 parseCommand = subparser $
   command "add" (parseAdd `withInfo` "Create a task") <>
-  command "init" (parseAdd `withInfo` "Initialize task database") <>
+  command "init" (parseInit `withInfo` "Initialize task database") <>
   command "delete" (parseDelete `withInfo` "Delete a task") <>
-  command "list" (parseDelete `withInfo` "List all tasks")
+  command "list" (parseList `withInfo` "List all tasks")
 
 parseAdd :: Parser Command
 parseAdd = Add <$> argument auto (metavar "TASKID")
@@ -41,7 +42,7 @@ parseDelete = Delete <$> argument auto (metavar "TASKID")
 
 app :: Command -> Hask ()
 app (Add id) = addTask id
-app Init = error "NotYetImplemented"
+app Init = initTask
 app (Delete id) = deleteTask id
 app List = error "NotYetImplemented"
 
@@ -54,6 +55,12 @@ deleteTask :: TaskId -> Hask ()
 deleteTask id = do
   logInfoN $ "Deleting task with id " <> tshow id
   liftIO $ putStrLn "Remove from DB"
+
+initTask :: Hask ()
+initTask = liftIO $ do
+  conn <- open "test.db"
+  execute_ conn "CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY, name TEXT, description TEXT, due DATE, modified DATE)"
+  close conn
 
 withInfo :: Parser a -> String -> ParserInfo a
 withInfo opts desc = info (helper <*> opts) $ progDesc desc
