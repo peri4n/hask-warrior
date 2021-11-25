@@ -10,9 +10,10 @@ import Lib
 import Options.Applicative
 
 type TaskId = Int
+type TaskName = Text
 
 data Command
-  = Add TaskId
+  = Add TaskName
   | Init
   | Delete TaskId
   | List
@@ -29,7 +30,7 @@ parseCommand = subparser $
   command "list" (parseList `withInfo` "List all tasks")
 
 parseAdd :: Parser Command
-parseAdd = Add <$> argument auto (metavar "TASKID")
+parseAdd = Add <$> argument str (metavar "TASKNAME")
 
 parseInit :: Parser Command
 parseInit = pure Init
@@ -41,25 +42,31 @@ parseDelete :: Parser Command
 parseDelete = Delete <$> argument auto (metavar "TASKID")
 
 app :: Command -> Hask ()
-app (Add id) = addTask id
+app (Add name) = addTask name
 app Init = initTask
 app (Delete id) = deleteTask id
 app List = error "NotYetImplemented"
 
-addTask :: TaskId -> Hask ()
-addTask id = do
-  logInfoN $ "Adding task with id " <> tshow id
-  liftIO $ putStrLn "Write to DB"
+addTask :: TaskName -> Hask ()
+addTask name = do
+  logInfoN $ "Adding task with id " <> tshow name
+  addTaskRecord name
 
 deleteTask :: TaskId -> Hask ()
 deleteTask id = do
   logInfoN $ "Deleting task with id " <> tshow id
   liftIO $ putStrLn "Remove from DB"
 
+addTaskRecord :: TaskName -> Hask ()
+addTaskRecord name = liftIO $ do
+  conn <- open "test.db"
+  execute conn "INSERT INTO task (name) VALUES (?)" (Only name)
+  close conn
+
 initTask :: Hask ()
 initTask = liftIO $ do
   conn <- open "test.db"
-  execute_ conn "CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY, name TEXT, description TEXT, due DATE, modified DATE)"
+  execute_ conn "CREATE TABLE IF NOT EXISTS task (id INTEGER PRIMARY KEY, name TEXT, description TEXT, due DATE, modified DATE)"
   close conn
 
 withInfo :: Parser a -> String -> ParserInfo a
