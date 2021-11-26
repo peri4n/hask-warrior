@@ -18,6 +18,17 @@ data Command
   | Delete TaskId
   | List
 
+data TaskRecord = TaskRecord
+  TaskId
+  Text
+  Text
+  UTCTime
+  UTCTime
+  deriving Show
+
+instance FromRow TaskRecord where
+  fromRow = TaskRecord <$> field <*> field <*> field <*> field <*> field
+
 main :: IO ()
 main = runStdoutLoggingT . runHask . app =<< execParser
     (parseCommand `withInfo` "Interactive Task Manager")
@@ -45,7 +56,19 @@ app :: Command -> Hask ()
 app (Add name) = addTask name
 app Init = initTask
 app (Delete id) = deleteTask id
-app List = error "NotYetImplemented"
+app List = listTask
+
+listTask :: Hask ()
+listTask = do
+  tasks <- listTaskRecords
+  liftIO $ mapM_ print tasks
+
+listTaskRecords :: Hask [TaskRecord]
+listTaskRecords = liftIO $ do
+  conn <- open "test.db"
+  r <- query_ conn "SELECT * FROM task" :: IO [TaskRecord]
+  close conn
+  return r
 
 addTask :: TaskName -> Hask ()
 addTask name = do
@@ -60,7 +83,8 @@ deleteTask id = do
 addTaskRecord :: TaskName -> Hask ()
 addTaskRecord name = liftIO $ do
   conn <- open "test.db"
-  execute conn "INSERT INTO task (name) VALUES (?)" (Only name)
+  currentTime <- getCurrentTime
+  execute conn "INSERT INTO task (name, description, due, modified) VALUES (?,?,?,?)" (name, "" :: String, currentTime, currentTime)
   close conn
 
 initTask :: Hask ()
