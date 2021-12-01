@@ -26,6 +26,7 @@ dependencies:
 - text
 - classy-prelude
 - sqlite-simple
+- boxes
 
 default-extensions:
 - NoImplicitPrelude
