@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3dd63c5a7ac728062859840255be12bdd35b33631977e12c5519dcba32554a20
+-- hash: 55f45467483c2a512bee3cb7e60de1a7373d9d79c932fdd09a3ebbb39ade0b9e
 
 name:           hask-warrior
 version:        0.1.0.0
@@ -27,6 +27,9 @@ source-repository head
 
 library
   exposed-modules:
+      HaskWarrior.CLI
+      HaskWarrior.Common
+      HaskWarrior.PrettyPrint
       Lib
   other-modules:
       Paths_hask_warrior

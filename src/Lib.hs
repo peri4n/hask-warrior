@@ -1,30 +1,10 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-
 module Lib where
 
-import Database.SQLite.Simple
-import ClassyPrelude hiding ((<>))
 import Control.Monad.Logger
-import Text.PrettyPrint.Boxes (text, printBox, emptyBox, (<+>), Box, (//), alignHoriz, left, right)
-import Data.List (foldl1')
-
-newtype Hask a = Hask { runHask :: LoggingT IO a }
-  deriving ( Functor
-           , Applicative
-           , Monad
-           , MonadIO
-           , MonadLogger)
-
-type TaskId = Int
-type TaskName = Text
-
-data TaskRecord = TaskRecord
-  TaskId
-  Text
-  Text
-  UTCTime
-  UTCTime
-  deriving Show
+import Database.SQLite.Simple
+import ClassyPrelude
+import HaskWarrior.Common
+import HaskWarrior.PrettyPrint
 
 instance FromRow TaskRecord where
   fromRow = TaskRecord <$> field <*> field <*> field <*> field <*> field
@@ -32,10 +12,7 @@ instance FromRow TaskRecord where
 listTask :: Hask ()
 listTask = do
   tasks <- listTaskRecords
-  liftIO $ printBox $ foldl1' (//) $ map taskToBox tasks
-
-taskToBox :: TaskRecord -> Box
-taskToBox (TaskRecord id name description due modified) = (alignHoriz left 4 . text . show) id <+> (alignHoriz left 20 . text . show) name <+> (text . show) description <+> (text . show) due <+> (text . show) modified
+  printTasks tasks
 
 listTaskRecords :: Hask [TaskRecord]
 listTaskRecords = liftIO $ do
