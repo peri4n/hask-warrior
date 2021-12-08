@@ -27,6 +27,7 @@ dependencies:
 - classy-prelude
 - sqlite-simple
 - boxes
+- mtl
 
 default-extensions:
 - NoImplicitPrelude

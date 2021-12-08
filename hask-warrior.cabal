@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 55f45467483c2a512bee3cb7e60de1a7373d9d79c932fdd09a3ebbb39ade0b9e
+-- hash: 1551d0105d51dfcd1f6336e5e1694acfe8164b1a9c431d4d745792b166cfa068
 
 name:           hask-warrior
 version:        0.1.0.0
@@ -29,6 +29,7 @@ library
   exposed-modules:
       HaskWarrior.CLI
       HaskWarrior.Common
+      HaskWarrior.DB
       HaskWarrior.PrettyPrint
       Lib
   other-modules:
@@ -41,6 +42,7 @@ library
     , boxes
     , classy-prelude
     , monad-logger
+    , mtl
     , optparse-applicative
     , sqlite-simple
     , text
@@ -60,6 +62,7 @@ executable hask-warrior-exe
     , classy-prelude
     , hask-warrior
     , monad-logger
+    , mtl
     , optparse-applicative
     , sqlite-simple
     , text
@@ -80,6 +83,7 @@ test-suite hask-warrior-test
     , classy-prelude
     , hask-warrior
     , monad-logger
+    , mtl
     , optparse-applicative
     , sqlite-simple
     , text
