@@ -5,10 +5,11 @@ import ClassyPrelude
 
 data TaskRecord = TaskRecord 
     { id :: TaskId
-    , title :: Text
-    , description :: Text
+    , title :: String
+    , description :: String
     , created :: UTCTime
     , modified :: UTCTime 
+    , due :: UTCTime 
     , status :: TaskStatus
     } deriving Show
 

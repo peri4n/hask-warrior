@@ -28,6 +28,7 @@ dependencies:
 - sqlite-simple
 - boxes
 - mtl
+- time
 
 default-extensions:
 - NoImplicitPrelude

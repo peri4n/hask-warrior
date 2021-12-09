@@ -27,15 +27,14 @@ data TaskStatus = Completed | Ready | Running deriving (Show, Read)
 
 data Task = Task
   { title :: Text,
-    description :: Text,
+    description :: String,
     created :: UTCTime,
     modified :: UTCTime,
     status :: TaskStatus
   }
   deriving (Show)
 
-mkTask :: Text -> Maybe Text -> IO Task
-mkTask title mDesc = do
+mkTask :: Text -> String -> IO Task
+mkTask title desc = do
   currentTime <- getCurrentTime
-  let desc = fromMaybe "" mDesc
   return $ Task title desc currentTime currentTime Ready

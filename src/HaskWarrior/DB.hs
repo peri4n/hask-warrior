@@ -12,7 +12,7 @@ import Lib as P
 import Text.Read
 
 instance FromRow TaskRecord where
-  fromRow = TaskRecord <$> field <*> field <*> field <*> field <*> field <*> field
+  fromRow = TaskRecord <$> field <*> field <*> field <*> field <*> field <*> field <*> field
 
 instance FromField TaskStatus where
   fromField f = case fieldData f of
@@ -31,7 +31,7 @@ listTaskRecords = liftIO $ do
   close conn
   return r
 
-addTask :: TaskName -> Maybe Text -> Hask ()
+addTask :: TaskName -> String -> Hask ()
 addTask task mDesc = do
   logInfoN $ "Adding task with id " ++ tshow task
   task <- liftIO $ mkTask task mDesc
@@ -46,11 +46,20 @@ addTaskRecord :: Task -> Hask ()
 addTaskRecord task = liftIO $ do
   conn <- open "test.db"
   currentTime <- getCurrentTime
-  execute conn "INSERT INTO task (name, description, due, modified, status) VALUES (?,?,?,?,?)" (C.title task, "" :: String, currentTime, currentTime, show Completed)
+  execute conn "INSERT INTO task (name, description, created, modified, due, status) VALUES (?,?,?,?,?,?)" (C.title task, C.description task, currentTime, currentTime, currentTime, show Ready)
   close conn
 
 initTask :: Text -> Hask ()
 initTask file = liftIO $ do
   conn <- open (T.unpack file)
-  execute_ conn "CREATE TABLE IF NOT EXISTS task (id INTEGER PRIMARY KEY, name TEXT, description TEXT, due DATE, modified DATE, status TEXT)"
+  execute_
+    conn
+    "CREATE TABLE IF NOT EXISTS task (\
+    \id INTEGER         PRIMARY KEY, \
+    \name TEXT          NOT NULL, \
+    \description TEXT, \
+    \created DATE       NOT NULL, \
+    \modified DATE      NOT NULL, \
+    \due DATE, \
+    \status TEXT        NOT NULL)"
   close conn
