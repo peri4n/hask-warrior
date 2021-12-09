@@ -5,7 +5,7 @@ module HaskWarrior.Common where
 import ClassyPrelude
 import Control.Monad.Logger
 
-data Env = Env
+newtype Env = Env
   { dbFile :: Text
   }
 
@@ -34,7 +34,8 @@ data Task = Task
   }
   deriving (Show)
 
-mkTask :: Text -> IO Task
-mkTask title = do
+mkTask :: Text -> Maybe Text -> IO Task
+mkTask title mDesc = do
   currentTime <- getCurrentTime
-  return $ Task title "" currentTime currentTime Ready
+  let desc = fromMaybe "" mDesc
+  return $ Task title desc currentTime currentTime Ready
