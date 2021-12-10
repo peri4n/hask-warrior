@@ -8,17 +8,30 @@ import Lib
 
 taskToBox :: TaskRecord -> Box
 taskToBox (TaskRecord id name description created modified due status) =
-  (alignHoriz left 4 . text . show) id
+  (alignHoriz right 4 . text . show) id
     <+> char '|'
     <+> (alignHoriz right 20 . text) name
     <+> char '|'
     <+> (alignHoriz right 20 . text) description
     <+> char '|'
-    <+> (text . (formatTime defaultTimeLocale "%c")) created
+    <+> (alignHoriz right 30 . text . (formatTime defaultTimeLocale "%c")) created
     <+> char '|'
-    <+> (text . (formatTime defaultTimeLocale "%c")) modified
+    <+> (alignHoriz right 30 . text . (formatTime defaultTimeLocale "%c")) modified
     <+> char '|'
-    <+> (text . show) status
+    <+> (alignHoriz left 10 . text . show) status
+
+header :: Box
+header = (alignHoriz right 4 . text) "ID"
+    <+> char '|'
+    <+> (alignHoriz right 20 . text) "Name"
+    <+> char '|'
+    <+> (alignHoriz right 20 . text) "Description"
+    <+> char '|'
+    <+> (alignHoriz right 30 . text) "Created"
+    <+> char '|'
+    <+> (alignHoriz right 30 . text) "Modified"
+    <+> char '|'
+    <+> (alignHoriz left 10 . text) "Status"
 
 printTasks :: [TaskRecord] -> IO ()
-printTasks tasks = liftIO $ printBox $ L.foldl1' (//) $ L.map taskToBox tasks
+printTasks tasks = liftIO $ printBox $ L.foldl' (//) header $ L.map taskToBox tasks
