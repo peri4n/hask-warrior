@@ -6,10 +6,10 @@ import HaskWarrior.DB
 import Options.Applicative
 
 data Command
-  = Add TaskName String
-  | Init (Maybe Text)
-  | Delete TaskId
-  | List
+  = AddTask TaskName String
+  | InitDb (Maybe Text)
+  | DeleteTask TaskId
+  | ListTasks
 
 parseCommand :: Parser Command
 parseCommand =
@@ -21,7 +21,7 @@ parseCommand =
 
 parseAdd :: Parser Command
 parseAdd =
-  Add
+  AddTask
     <$> argument str (metavar "TASKNAME")
     <*> strOption
       ( short 'd'
@@ -32,19 +32,19 @@ parseAdd =
       )
 
 parseInit :: Parser Command
-parseInit = Init <$> option auto (value (Just "test.db") <> metavar "DB_PATH")
+parseInit = InitDb <$> option auto (value (Just "test.db") <> metavar "DB_PATH")
 
 parseList :: Parser Command
-parseList = pure List
+parseList = pure ListTasks
 
 parseDelete :: Parser Command
-parseDelete = Delete <$> argument auto (metavar "TASKID")
+parseDelete = DeleteTask <$> argument auto (metavar "TASKID")
 
 run :: Env -> Command -> Hask ()
-run _ (Add name description) = addTask name description
-run env (Init db) = initTask (fromMaybe (dbFile env) db)
-run _ (Delete id) = deleteTask id
-run _ List = listTask
+run _ (AddTask name description) = addTask name description
+run env (InitDb db) = initTask (fromMaybe (dbFile env) db)
+run _ (DeleteTask id) = deleteTask id
+run _ ListTasks = listTask
 
 app :: Env -> Hask ()
 app env = run env =<< liftIO (execParser (parseCommand `withInfo` "Interactive Task Manager"))
