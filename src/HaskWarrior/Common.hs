@@ -23,7 +23,7 @@ type TaskId = Int
 
 type TaskName = Text
 
-data TaskStatus = Completed | Ready | Running deriving (Show, Read)
+data TaskStatus = Completed | Ready | Running deriving (Show, Read, Eq)
 
 data Task = Task
   { title :: Text,
@@ -32,9 +32,9 @@ data Task = Task
     modified :: UTCTime,
     status :: TaskStatus
   }
-  deriving (Show)
+  deriving (Show, Eq)
 
-mkTask :: Text -> String -> IO Task
-mkTask title desc = do
-  currentTime <- getCurrentTime
-  return $ Task title desc currentTime currentTime Ready
+mkTask :: Text -> String -> Task
+mkTask title desc = Task title desc currentTime currentTime Ready
+ where currentTime = UTCTime (ModifiedJulianDay 5) 23 -- this is set to a non-sensical value to drop the side effect for now
+

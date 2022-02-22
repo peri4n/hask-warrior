@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 47c241643247a85e95450c0bbcdf2c682b44fd33ed61a29a6af972166bea6d67
+-- hash: c5ec1d5c866a405b74e4be39bf4bb461efc016d51419d3132661d78b586e7a87
 
 name:           hask-warrior
 version:        0.1.0.0
@@ -84,6 +84,7 @@ test-suite hask-warrior-test
     , boxes
     , classy-prelude
     , hask-warrior
+    , hspec
     , monad-logger
     , mtl
     , optparse-applicative

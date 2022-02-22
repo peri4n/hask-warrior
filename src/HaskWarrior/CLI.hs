@@ -1,6 +1,7 @@
-module HaskWarrior.CLI (app, parseCommand) where
+module HaskWarrior.CLI (app, run, parseCommand, Command(..)) where
 
 import ClassyPrelude
+import Control.Monad (void)
 import HaskWarrior.Common
 import HaskWarrior.DB
 import Options.Applicative
@@ -40,11 +41,11 @@ parseList = pure ListTasks
 parseDelete :: Parser Command
 parseDelete = DeleteTask <$> argument auto (metavar "TASKID")
 
-run :: Env -> Command -> Hask ()
-run _ (AddTask name description) = addTask name description
-run env (InitDb db) = initTask (fromMaybe (dbFile env) db)
+run :: (TaskRepo m) => Env -> Command -> m ()
+run _ (AddTask name description) = addTask $ mkTask name description
+run env (InitDb db) = initDb (fromMaybe (dbFile env) db)
 run _ (DeleteTask id) = deleteTask id
-run _ ListTasks = listTask
+run _ ListTasks = void listTasks
 
 app :: Env -> Hask ()
 app env = run env =<< liftIO (execParser (parseCommand `withInfo` "Interactive Task Manager"))

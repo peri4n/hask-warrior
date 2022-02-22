@@ -19,47 +19,41 @@ instance FromField TaskStatus where
     SQLText t -> Ok ((read . T.unpack) t)
     _ -> Errors []
 
-listTask :: Hask ()
-listTask = do
-  tasks <- listTaskRecords
-  liftIO $ printTasks tasks
+class (Monad m) => TaskRepo m where
+  listTasks :: m [TaskRecord]
+  addTask :: Task -> m ()
+  deleteTask :: TaskId -> m ()
+  initDb :: Text -> m ()
 
-listTaskRecords :: Hask [TaskRecord]
-listTaskRecords = liftIO $ do
-  conn <- open "test.db"
-  r <- query_ conn "SELECT * FROM task" :: IO [TaskRecord]
-  close conn
-  return r
+instance TaskRepo Hask where
+  addTask task = liftIO $ do
+    conn <- open "test.db"
+    currentTime <- getCurrentTime
+    execute conn "INSERT INTO task (name, description, created, modified, due, status) VALUES (?,?,?,?,?,?)" (C.title task, C.description task, currentTime, currentTime, currentTime, show Ready)
+    close conn
 
-addTask :: TaskName -> String -> Hask ()
-addTask task mDesc = do
-  logInfoN $ "Adding task with id " ++ tshow task
-  task <- liftIO $ mkTask task mDesc
-  addTaskRecord task
+  listTasks = liftIO $ do
+    conn <- open "test.db"
+    r <- query_ conn "SELECT * FROM task" :: IO [TaskRecord]
+    close conn
+    return r
 
-deleteTask :: TaskId -> Hask ()
-deleteTask id = do
-  logInfoN $ "Deleting task with id " ++ tshow id
-  liftIO $ putStrLn "Remove from DB"
+  deleteTask id = liftIO $ do
+    conn <- open "test.db"
+    r <- execute conn "DELETE FROM task WHERE id = ?" (Only id)
+    close conn
+    return r
 
-addTaskRecord :: Task -> Hask ()
-addTaskRecord task = liftIO $ do
-  conn <- open "test.db"
-  currentTime <- getCurrentTime
-  execute conn "INSERT INTO task (name, description, created, modified, due, status) VALUES (?,?,?,?,?,?)" (C.title task, C.description task, currentTime, currentTime, currentTime, show Ready)
-  close conn
-
-initTask :: Text -> Hask ()
-initTask file = liftIO $ do
-  conn <- open (T.unpack file)
-  execute_
-    conn
-    "CREATE TABLE IF NOT EXISTS task (\
-    \id INTEGER         PRIMARY KEY, \
-    \name TEXT          NOT NULL, \
-    \description TEXT, \
-    \created DATE       NOT NULL, \
-    \modified DATE      NOT NULL, \
-    \due DATE, \
-    \status TEXT        NOT NULL)"
-  close conn
+  initDb file = liftIO $ do
+    conn <- open (T.unpack file)
+    execute_
+      conn
+      "CREATE TABLE IF NOT EXISTS task (\
+      \id INTEGER         PRIMARY KEY, \
+      \name TEXT          NOT NULL, \
+      \description TEXT, \
+      \created DATE       NOT NULL, \
+      \modified DATE      NOT NULL, \
+      \due DATE, \
+      \status TEXT        NOT NULL)"
+    close conn
