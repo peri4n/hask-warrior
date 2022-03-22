@@ -41,14 +41,14 @@ parseList = pure ListTasks
 parseDelete :: Parser Command
 parseDelete = DeleteTask <$> argument auto (metavar "TASKID")
 
-run :: (TaskRepo m) => Env -> Command -> m ()
+run :: (TaskRepo m) => AppConfig -> Command -> m ()
 run _ (AddTask name description) = addTask $ mkTask name description
-run env (InitDb db) = initDb (fromMaybe (dbFile env) db)
+run config (InitDb db) = initDb (appConfigDbFile config)
 run _ (DeleteTask id) = deleteTask id
 run _ ListTasks = void listTasks
 
-app :: Env -> Hask ()
-app env = run env =<< liftIO (execParser (parseCommand `withInfo` "Interactive Task Manager"))
+app :: AppConfig -> Hask ()
+app config = run config =<< liftIO (execParser (parseCommand `withInfo` "Interactive Task Manager"))
 
 withInfo :: Parser a -> String -> ParserInfo a
 withInfo opts desc = info (helper <*> opts) $ progDesc desc

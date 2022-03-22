@@ -1,21 +1,32 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module HaskWarrior.Common where
 
 import ClassyPrelude
+import Conferer
 import Control.Monad.Logger
 
-newtype Env = Env
-  { dbFile :: Text
+data AppConfig = AppConfig
+  { appConfigDbFile :: Text
   }
+  deriving (Generic)
 
-newtype Hask a = Hask {runHask :: ReaderT Env (LoggingT IO) a}
+instance FromConfig AppConfig
+
+instance DefaultConfig AppConfig where
+  configDef =
+    AppConfig
+      { appConfigDbFile = ".config/hask/task.db"
+      }
+
+newtype Hask a = Hask {runHask :: ReaderT AppConfig (LoggingT IO) a}
   deriving
     ( Functor,
       Applicative,
       Monad,
       MonadIO,
-      MonadReader Env,
+      MonadReader AppConfig,
       MonadLogger
     )
 
@@ -36,5 +47,5 @@ data Task = Task
 
 mkTask :: Text -> String -> Task
 mkTask title desc = Task title desc currentTime currentTime Ready
- where currentTime = UTCTime (ModifiedJulianDay 5) 23 -- this is set to a non-sensical value to drop the side effect for now
-
+  where
+    currentTime = UTCTime (ModifiedJulianDay 5) 23 -- this is set to a non-sensical value to drop the side effect for now

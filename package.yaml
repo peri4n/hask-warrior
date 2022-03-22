@@ -29,6 +29,7 @@ dependencies:
 - boxes
 - mtl
 - time
+- conferer
 
 default-extensions:
 - NoImplicitPrelude
